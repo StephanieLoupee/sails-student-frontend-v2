@@ -1,22 +1,21 @@
 (function(){
 
-  //function to delete record by settin id on form and then submitting the form
-  //sets value of student id in hidden delete form and submits form
+  //function to delete record by setting id on form and then submitting the form
+  //sets value of major_class id in hidden delete form and submits form
   //not completely ideal but wanted to take advantage of flash messages in sails
   function deleteRecord(record_id){
-    $("#deleteform input[name=student_id]").val(record_id);
+    $("#deleteform input[name=major_class_id]").val(record_id);
     $("#deleteform").submit();
   }
 
-  function getStudent(record_id){
-    return $.get("http://localhost:1337/student/" + record_id, function(data){
-      console.log("got student");
+  function getMajorClass(record_id){
+    return $.get("http://localhost:1337/major_class/" + record_id, function(data){
     })
   }
 
   $(function(){
 
-    $('#studentTable').DataTable( {
+    $('#majorClassTable').DataTable( {
         dom: 'Bfrtip',
         buttons: [
             'copy', 'csv', 'excel', 'pdf', 'print'
@@ -29,13 +28,13 @@
 
 
     //initialize variables for items in the DOM we will work with
-    let manageStudentForm = $("#manageStudentForm");
-    let addStudentButton = $("#addStudentButton");
+    let manageMajorClassForm = $("#manageMajorClassForm");
+    let addMajorClassButton = $("#addMajorClassButton");
 
-    //add student button functionality
-    addStudentButton.click(function(){
-      manageStudentForm.attr("action", "/create_student");
-      manageStudentForm.dialog({
+    //add major class button functionality
+    addMajorClassButton.click(function(){
+      manageMajorClassForm.attr("action", "/create_major_class");
+      manageMajorClassForm.dialog({
         title: "Add Record",
         width: 700,
         modal: true,
@@ -45,20 +44,20 @@
           },
           "Submit": function() {
             //function to delete record
-            manageStudentForm.submit()
+            manageMajorClassForm.submit()
           }
         }
       });
     })
 
-  	$("#studentTable").on("click", "#editButton", function(e){
-      let recordId = $(this).data("studentid")
-      manageStudentForm.find("input[name=student_id]").val(recordId);
-      manageStudentForm.attr("action", "/update_student");
-      let student = getStudent(recordId);
+  	$("#majorClassTable").on("click", "#editButton", function(e){
+      let recordId = $(this).data("major-classid")
+      manageMajorClassForm.find("input[name=major_class_id]").val(recordId);
+      manageMajorClassForm.attr("action", "/update_major_class");
+      let majorClass = getMajorClass(recordId);
 
-      //populate form when api call is done (after we get student to edit)
-      student.done(function(data){
+      //populate form when api call is done (after we get major to edit)
+      majorClass.done(function(data){
         $.each(data, function(name, val){
             var $el = $('[name="'+name+'"]'),
                 type = $el.attr('type');
@@ -76,7 +75,7 @@
         });
       })
 
-      manageStudentForm.dialog({
+      manageMajorClassForm.dialog({
         title: "Add Record",
         width: 700,
         modal: true,
@@ -86,15 +85,16 @@
           },
           Submit: function() {
             //function to delete record
-            manageStudentForm.submit()
+            manageMajorClassForm.submit()
           }
         }
       });
     })
 
 
-    $("#studentTable").on("click", "#deleteButton", function(e){
-      let recordId = $(this).data("studentid")
+    $("#majorClassTable").on("click", "#deleteButton", function(e){
+      let recordId = $(this).data("major-classid");
+      console.log("record ID: " + recordId);
       $("#deleteConfirm").dialog({
         title: "Confirm Delete",
         modal: true,
@@ -102,7 +102,7 @@
           Cancel: function() {
             $( this ).dialog( "close" );
           },
-          "Delete Student": function() {
+          "Delete MajorClass": function() {
             //function to delete record
             deleteRecord(recordId);
           }
